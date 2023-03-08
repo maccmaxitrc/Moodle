@@ -49,11 +49,13 @@ class contactsitesupport_form extends \moodleform {
         $mform->addRule('email', get_string('missingemail'), 'required', null, 'client');
         $mform->setType('email', PARAM_EMAIL);
 
-        // Provider.
-        $mform->addElement('select', 'provider', 'Course provider', array(null=>'Please choose',1=>'Albion Center',0=>'Other'));
-        $mform->setDefault('provider',null);
-        $mform->addRule('provider', null, 'required', null, 'client');
-        $mform->setType('provider', PARAM_TEXT);
+        // Provider
+        if($CFG->albionemail){
+            $mform->addElement('select', 'provider', 'Course provider', array(null=>'Please choose',1=>'Albion Center',0=>'Other'));
+            $mform->setDefault('provider',null);
+            $mform->addRule('provider', null, 'required', null, 'client');
+            $mform->setType('provider', PARAM_TEXT);
+        }
 
         // Subject.
         $mform->addElement('text', 'subject', get_string('subject'));
