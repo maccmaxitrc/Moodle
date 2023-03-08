@@ -47,14 +47,19 @@ if ($form->is_cancelled()) {
     $data->notloggedinuser = (!$user);
     $message = $renderer->render_from_template('user/contact_site_support_email_body', $data);
 
-    if (!email_to_user(core_user::get_support_user(), $from, $subject, $message)) {
-        if($data->provider == 1) {
-            $supportemail = $CFG->albionemail ?? $CFG->supportemail;
-        }
-        else {
-            $supportemail = $CFG->supportemail;
-        }
+    $supportuser = core_user::get_support_user();
+    if($data->provider == 1 && $CFG -> albionemail) {
+        $supportemail = $CFG -> albionemail;
+        $supportuser -> email = $supportemail;
+        $supportuser -> firstname = get_string("albioncenter");
+    }
+    else {
+        $supportemail = $CFG->supportemail;
+    }
+
+    if (!email_to_user($supportuser, $from, $subject, $message)) {
         $form->set_data($data);
+
         $templatectx = [
             'supportemail' => $user ? html_writer::link("mailto:{$supportemail}", $supportemail) : false,
             'supportform' => $form->render(),
