@@ -42,14 +42,18 @@ if ($form->is_cancelled()) {
     redirect($CFG->wwwroot);
 } else if ($form->is_submitted() && $form->is_validated() && confirm_sesskey()) {
     $data = $form->get_data();
-
     $from = $user ?? core_user::get_noreply_user();
     $subject = get_string('supportemailsubject', 'admin', format_string($SITE->fullname));
     $data->notloggedinuser = (!$user);
     $message = $renderer->render_from_template('user/contact_site_support_email_body', $data);
 
     if (!email_to_user(core_user::get_support_user(), $from, $subject, $message)) {
-        $supportemail = $CFG->supportemail;
+        if($data->provider == 1) {
+            $supportemail = $CFG->albionemail ?? $CFG->supportemail;
+        }
+        else {
+            $supportemail = $CFG->supportemail;
+        }
         $form->set_data($data);
         $templatectx = [
             'supportemail' => $user ? html_writer::link("mailto:{$supportemail}", $supportemail) : false,
