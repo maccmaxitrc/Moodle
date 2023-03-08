@@ -42,6 +42,7 @@ if ($form->is_cancelled()) {
     redirect($CFG->wwwroot);
 } else if ($form->is_submitted() && $form->is_validated() && confirm_sesskey()) {
     $data = $form->get_data();
+    
     $from = $user ?? core_user::get_noreply_user();
     $subject = get_string('supportemailsubject', 'admin', format_string($SITE->fullname));
     $data->notloggedinuser = (!$user);
@@ -59,7 +60,6 @@ if ($form->is_cancelled()) {
 
     if (!email_to_user($supportuser, $from, $subject, $message)) {
         $form->set_data($data);
-
         $templatectx = [
             'supportemail' => $user ? html_writer::link("mailto:{$supportemail}", $supportemail) : false,
             'supportform' => $form->render(),
